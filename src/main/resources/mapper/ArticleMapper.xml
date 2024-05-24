@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.example.homework.dao.mapper.ArticleMapper">
+<resultMap id="ArticleMap" type="org.example.homework.dao.pojo.Article">
+    <result property="articleId" column="article_id"></result>
+    <result property="publishedTime" column="published_time"></result>
+</resultMap>
+    <insert id="add">
+        insert into article (uid,title,content,published_time)
+        values (#{uid},#{title},#{content},#{publishedTime})
+    </insert>
+    <update id="add2">
+        update article
+        set favorites=(#{favorites})
+        where article_id=#{articleId}
+    </update>
+    <update id="add3">
+        update article
+        set comments=(#{comments})
+        where article_id=#{articleId}
+    </update>
+    <update id="add1" parameterType="org.example.homework.dao.pojo.Article">
+        update article
+        set likes=(#{likes})
+        where article_id=#{articleId}
+    </update>
+    <select id="selectAll" resultMap="ArticleMap">
+        select *
+        from article
+    </select>
+    <select id="selectByArticleId" resultMap="ArticleMap">
+        select *
+        from article
+        where article_id=#{articleId}
+    </select>
+    <select id="selectAll1" resultMap="ArticleMap">
+        select *
+        from article
+        where uid=#{uid}
+    </select>
+    <select id="selectAll2" resultMap="ArticleMap">
+        select *
+        from article
+        where title=#{title}
+    </select>
+</mapper>

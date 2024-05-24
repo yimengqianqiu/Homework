@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>收藏</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <link rel="stylesheet" href="css/base.css">
+    <style>
+        .el-col{
+            margin-top: 30px;
+        }
+        #edit{
+            height: 40px;
+            background-color: rgb(64,158,255);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            width: 100px;
+            border-radius: 5px;
+            color: white;
+
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header>
+            <el-row>
+                <el-col :span="6">
+                    <el-breadcrumb separator=" ">
+                        <el-breadcrumb-item :to="{ path: '/' }"><a href="index.html">首页</a></el-breadcrumb-item>
+                        <el-breadcrumb-item :to="{ path: '/' }"><a href="MyInfo.html">个人中心</a></el-breadcrumb-item>
+                        <el-breadcrumb-item></el-breadcrumb-item>
+                    </el-breadcrumb>
+                </el-col>
+            </el-row>
+        </el-header>
+        <el-main style="margin-top: 100px">
+            <div>收藏文章</div>
+            <li v-for="favorite in favorites" :key="favorite.id" style="margin-left: 350px;margin-right: 350px" @click="showInfo(favorite.articleId)">
+                <div id="blog">
+                    <div>
+                        <h1 style="font-size: 30px">{{favorite.articleId}}</h1>
+                    </div>
+                </div>
+            </li>
+        </el-main>
+    </el-container>
+</div>
+<script>
+    const vue=new Vue({
+        el:"#app",
+        data(){
+            return{
+                queryString:"",
+                article:{
+                    title:"",
+                    content:"",
+
+                },
+
+                users:[{
+                    uid:"",
+                    nickname:"",
+                    username:"",
+                }],
+
+                favorites:[{
+                    id:"",
+                    articleId:"",
+                }],
+
+                fav:[{
+                    ss:"",
+                }],
+
+            }
+        },
+        methods:{
+            show(){
+                axios.get("/favorite/selectAll").then(res=>{
+                    if(res.data.code==200){
+                        this.favorites=res.data.data;
+                    }
+
+                })
+
+            },
+
+            showInfo(articleId){
+                window.location.href='article.html?articleId='+articleId;
+    },
+
+        },
+
+        created(){
+            this.show();
+        }
+
+
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <link rel="stylesheet" href="css/base.css">
+    <style>
+        .el-col{
+            margin-top: 30px;
+        }
+        #edit{
+            height: 40px;
+            background-color: rgb(64,158,255);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            width: 100px;
+            border-radius: 5px;
+            color: white;
+
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header>
+            <el-row>
+                <el-col :span="6">
+                    <el-breadcrumb separator=" ">
+                        <el-breadcrumb-item :to="{ path: '/' }"><a href="index.html">首页</a></el-breadcrumb-item>
+                        <el-breadcrumb-item :to="{ path: '/' }"><a href="MyInfo.html">个人中心</a></el-breadcrumb-item>
+                        <el-breadcrumb-item></el-breadcrumb-item>
+                    </el-breadcrumb>
+                </el-col>
+                <el-col :span="8">
+                    <el-input v-model="queryString" placeholder="请输入要查找的文章或作者"></el-input>
+                </el-col>
+                <el-col :span="2">
+                    <el-button type="primary" icon="el-icon-search" @click="select()">搜索</el-button>
+                </el-col>
+                <el-col :span="2">
+                    <a type="primary" href="edit.html" style="color: white">
+                    <div id="edit">
+                        <i class="el-icon-document-add"></i>
+                        发布
+                    </div>
+                    </a>
+                </el-col>
+                <el-col :span="6">
+                    <img src="" style="float: right">
+                </el-col>
+            </el-row>
+        </el-header>
+        <el-main style="margin-top: 100px">
+            <el-form ref="article" :model="article">
+                <el-form-item label="标题">
+                    <el-input v-model="article.title"></el-input>
+                </el-form-item>
+                <el-form-item label="文章内容">
+                    <el-input type="textarea" v-model="article.content" :rows="25"></el-input>
+                </el-form-item>
+                <el-form-item style="float: right">
+                    <el-button type="primary" @click="onSubmit()">提交</el-button>
+                </el-form-item>
+            </el-form>
+        </el-main>
+    </el-container>
+</div>
+<script>
+    const vue=new Vue({
+        el:"#app",
+        data(){
+            return{
+                queryString:"",
+                article:{
+                    title:"",
+                    content:"",
+
+                },
+            }
+        },
+        methods:{
+            select(){
+                //TODO
+            },
+            onSubmit(){
+                axios.post("/article/add",this.article).then(res=>{
+                    if(res.data.code==200){
+                        window.location.href="index.html"
+                    }else{
+                        this.$message.error(res.data.message)
+                    }
+                });
+            },
+        }
+
+
+
+
+    })
+
+</script>
+
+</body>
+</html>

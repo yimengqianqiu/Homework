@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <title>文章</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <!-- 引入样式 -->
+        <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <!-- 引入组件库 -->
+        <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+        <script src="js/utils.js"></script>
+        <link rel="stylesheet" href="css/base.css">
+        <link rel="stylesheet" href="font/iconfont.css">
+        <style>
+            .el-col{
+                margin-top: 30px;
+            }
+            #edit{
+                height: 40px;
+                background-color: rgb(64,158,255);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 15px;
+                width: 100px;
+                border-radius: 5px;
+                color: white;
+
+            }
+        </style>
+        <script>
+            const articleId=getUrlParam("articleId");
+        </script>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header>
+            <el-row>
+                <el-col :span="6">
+                    <el-breadcrumb separator=" ">
+                        <el-breadcrumb-item :to="{ path: '/' }"><a href="index.html">首页</a></el-breadcrumb-item>
+                        <el-breadcrumb-item :to="{ path: '/' }"><a href="MyInfo.html">个人中心</a></el-breadcrumb-item>
+                        <el-breadcrumb-item></el-breadcrumb-item>
+                    </el-breadcrumb>
+                </el-col>
+                <el-col :span="6">
+                    <img src="" style="float: right">
+                </el-col>
+            </el-row>
+        </el-header>
+        <el-main style="margin-right: 350px;margin-left: 350px">
+            <h1 style="font-size: 40px">{{article.title}}</h1>
+            <div style="background-color: #0077aa;height: 20px">
+                <i class="iconfont icon-icon-test"></i>
+                于{{article.publishedTime}}发布
+                <i class="iconfont icon-icon-test"></i>
+                点赞数{{article.likes}}
+                <i class="iconfont icon-icon-test"></i>
+                收藏数{{article.favorites}}
+                <i class="iconfont icon-icon-test"></i>
+                作者{{user1.username}}
+            </div>
+            <div>{{article.content}}</div>
+            <el-form ref="comment" :model="comment">
+                <el-form-item>
+                    <el-button type="primary"  @click="submit(article.likes)">点赞</el-button>
+                </el-form-item>
+
+        </el-main>
+    </el-container>
+</div>
+<script>
+    const vue=new Vue({
+        el: "#app",
+        data() {
+            return {
+                queryString: "",
+                article:
+                    {
+                        title: "",
+                        content: "",
+                        publishedTime: "",
+                        likes: "",
+                        favorites: "",
+                        articleId: "",
+                        uid:"",
+                        comments:"",
+                    },
+                comment:
+                    {
+                        likes: "",
+                        content: "",
+                        commentTime: "",
+                        articleId:"",
+                    },
+                comments:[
+                    {
+                        likes:"",
+                        content:"",
+                        articleId:"",
+                        commentId:"",
+                    }
+                ],
+                comment1:
+                    {
+                        likes:"",
+                        content:"",
+                        articleId:"",
+                        commentId:"",
+                    },
+                user:{
+                    uid:"",
+                    username:"",
+                },
+                favorites:[{
+                    uid:"",
+                    articleId:"",
+                    id:"",
+                }],
+
+                follows:[{
+                    followingId:"",
+                    followedId:"",
+                    id:"",
+                }],
+
+                fav:{
+                    ss:"",
+                    len:"",
+                    dd:"",
+                },
+
+                fav1:{
+                    ss:"",
+                    len:"",
+                    dd:"",
+                },
+
+                users:[{
+                    uid:"",
+                    username:"",
+                }],
+
+                user1:{
+                    uid:"",
+                    username:"",
+                },
+
+            }
+
+
+        },
+        methods: {
+            select() {
+                axios.post("/article/selectAll", this.queryString).then(res => {
+                    this.articles = res.data.data;
+                })
+            },
+            show() {
+                axios.get("/article/selectByArticleId?articleId=" + articleId).then(res => {
+                    this.article = res.data.data;
+                })
+            },
+            submit(likes) {
+                this.article.likes = likes + 1;
+                axios.post("/article/add1", this.article).then(res => {
+
+                    }
+                )
+            },
+            onSubmit(articleId,comments){
+                this.comment.articleId=articleId;
+                axios.post("/comment/add",this.comment,this.article).then(res=>{
+                    if(res.data.code==200){
+                        this.article.comments=comments+1;
+                        axios.post("/article/add3", this.article).then(res => {
+                            }
+                        );
+                        window.location.href="article.html?articleId=" + articleId;
+                    }else{
+                        this.$message.error(res.data.message)
+                    }
+                });
+            },
+
+            show1(){
+                axios.get("/comment/selectByArticleId?articleId=" + articleId).then(res=>{
+                    if(res.data.code==200){
+                        this.comments=res.data.data
+                    }else{
+                        this.$message.error(res.data.message)
+                    }
+                })
+            },
+
+            submit1(likes,commentId){
+                this.comment1.likes = likes + 1;
+                this.comment1.commentId=commentId;
+                axios.post("/comment/add1",this.comment1).then(res => {
+                    if(res.data.code==200){
+                        window.location.href="article.html?articleId=" + articleId;
+                    }else{
+                        this.$message.error(res.data.message)
+                    }
+                    }
+                )},
+
+            submit2(favorites,uid,favorite){
+                var len=favorites.length;
+                var aes=0;
+                for (var i=0;i<len;i++){
+                    if(favorites[i].uid==uid){
+                        aes=1;
+                        break;
+                    }
+                };
+                    if(aes==1){
+                        this.article.favorites=favorite-1;
+                        axios.post("/article/add2", this.article).then(res => {
+
+                            }
+                        );
+                        axios.post("/favorite/del",this.article).then(res=>{
+                            window.location.href="article.html?articleId=" + articleId;
+                        });
+                    }else if(aes!=1){
+                        this.article.favorites=favorite+1;
+                        axios.post("/article/add2", this.article).then(res => {
+                            }
+                        );
+                        axios.post("/favorite/add",this.article).then(res=>{
+                            if(res.data.code==200){
+                                window.location.href="article.html?articleId=" + articleId;
+                            }
+                        });
+                    }
+            },
+
+            show2(){
+                axios.get("/user/selectAll").then(res=>{
+                    if(res.data.code==200){
+                        this.user=res.data.data
+                    }else{
+                        this.$message.error(res.data.message)
+                    }
+                })
+            },
+
+            show3(){
+                axios.get("/favorite/selectByArticleId?articleId=" + articleId).then(res=>{
+                    if(res.data.code==200){
+                        this.favorites=res.data.data;
+                        this.show2();
+                        this.fav.len=this.favorites.length;
+                        this.fav.ss="点击收藏";
+                        for(var i=0;i<this.fav.len;i++){
+                            if(this.favorites[i].uid==this.user.uid){
+                                this.fav.ss="取消收藏";
+                                break;
+                            }
+                        }
+                    }else{
+                        this.$message.error(res.data.message)
+                    }
+                })
+            },
+
+            submit3(uid,follows,id){
+                var len=follows.length;
+                var aes=0;
+                if(uid==id){
+                    this.$message.error("无法关注")
+                }else{
+                for (var i=0;i<len;i++){
+                    if(follows[i].followedId==uid){
+                        aes=1;
+                        break;
+                    }
+                };
+                if(aes==1){
+                    axios.post("/follow/del1",this.article).then(res=>{
+                        window.location.href="article.html?articleId=" + articleId;
+                    });
+                }else if(aes!=1){
+                    axios.post("/follow/add",this.article).then(res=>{
+                        if(res.data.code==200){
+                            window.location.href="article.html?articleId=" + articleId;
+                        }
+                    });
+                }
+                }
+            },
+
+            show4(){
+                axios.get("/follow/selectAll").then(res=>{
+                    if(res.data.code==200){
+                        this.follows=res.data.data;
+                        this.show();
+                        this.fav1.len=this.follows.length;
+                        this.fav1.ss="点击关注";
+                        for(var i=0;i<this.fav1.len;i++){
+                            if(this.follows[i].followedId==this.article.uid){
+                                this.fav1.ss="取消关注";
+                                break;
+                            }
+                        }
+                    }else{
+                        this.$message.error(res.data.message)
+                    }
+                })
+            },
+
+            show5(){
+                axios.get("/user/selectAll1").then(res=>{
+                    if(res.data.code==200){
+                        this.users=res.data.data
+                        this.show();
+                        var len=this.users.length
+                        for(var i=0;i<len;i++){
+                            if(this.users[i].uid==this.article.uid){
+                                this.user1.username=this.users[i].username;
+                                break;
+                            }
+                        }
+                    }else{
+                        this.$message.error(res.data.message)
+                    }
+                })
+            },
+
+
+
+        },
+
+            created() {
+                this.show();
+                this.submit();
+                this.show1();
+                this.show2();
+                this.show3();
+                this.show4();
+                this.show5();
+            }
+    })
+</script>
+
+</body>
+</html>
